@@ -133,15 +133,32 @@ function closeScanner() {
 
 async function fetchProductData(code) {
     const client = new OpenFoodFacts();
-    try {
-        const data = await client.getProduct(code);
-        if (data) {
-            if (data.name) document.getElementById('manual-name').value = data.name;
-            if (data.volume) document.getElementById('manual-volume').value = data.volume;
-            if (data.alcohol) document.getElementById('manual-alcohol').value = data.alcohol;
-        }
-    } catch (err) {
-        console.error('Error fetching product:', err);
+    const data = await client.getProduct(code);
+    
+    const errorDiv = document.getElementById('barcode-error');
+    const successDiv = document.getElementById('barcode-success');
+    
+    errorDiv.innerHTML = '';
+    errorDiv.classList.add('hidden');
+    successDiv.innerHTML = '';
+    successDiv.classList.add('hidden');
+    
+    if (data.error) {
+        errorDiv.innerHTML = `<p class="text-red-400 text-sm">${escapeHtml(data.error)}</p>`;
+        errorDiv.classList.remove('hidden');
+        return;
+    }
+    
+    if (data.name) document.getElementById('manual-name').value = data.name;
+    if (data.volume) document.getElementById('manual-volume').value = data.volume;
+    if (data.alcohol !== null) document.getElementById('manual-alcohol').value = data.alcohol;
+    
+    if (data.name) {
+        successDiv.innerHTML = '<p class="text-neon text-sm">✓ Product found!</p>';
+        successDiv.classList.remove('hidden');
+        setTimeout(() => {
+            successDiv.classList.add('hidden');
+        }, 2000);
     }
 }
 
