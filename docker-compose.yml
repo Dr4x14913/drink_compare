@@ -2,5 +2,5 @@ services:
   drink-compare:
     build: .
     ports:
-      - "11435:80"
+      - "5535:80"
     restart: unless-stopped
